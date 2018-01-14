@@ -3,14 +3,15 @@ import people from "./people.json";
 import PeopleCard from "./components/PeopleCard";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
+import Panel from "./components/Panel"
 
 class App extends Component {
     //set state of people
     state = {
         data:people,
         score: 0,
-        topScore: 0
+        topScore: 0,
+        alert:"white-text",
     };
     //function to mark it has been clicked
     clicked = (obj) =>{
@@ -47,10 +48,15 @@ class App extends Component {
             //console.log(this.state.data)
         }else{
             console.log("wrong")
-            this.newGame()
+            this.alertUser();
+            this.setState({alert: "red-text"})
+            setTimeout(this.newGame, 100)
         }
     };
-
+    //alert the user that same picture has been clicked before
+    alertUser = ()=>{
+        // $( ".red-text" ).effect("shake")
+    }
     //set newGame
     newGame = ()=> {
         //change all clicked to false;
@@ -59,10 +65,13 @@ class App extends Component {
             newPeople.chosen = false
             return newPeople})
     //    console.log(newData)
+
         this.setState({
             data:newData,
-            score:0
+            score:0,
+            alert:"white-text"
         })
+        console.log(this.state.alert)
     }
 
     //shuffle list
@@ -75,7 +84,9 @@ class App extends Component {
                 <Header
                     score = {this.state.score}
                     topScore = {this.state.topScore} />
-                <div className = "center">
+                <Panel colors = {this.state.alert}/>
+
+                <div className = "center" >
                     {this.state.data.map(people =>(
                         <PeopleCard
                             name = {people.name}
@@ -86,8 +97,10 @@ class App extends Component {
                         />
                     ))}
                 </div>
+
                 <Footer />
             </div>
+
         )
     }
 }
