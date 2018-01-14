@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import people from "./people.json";
 import PeopleCard from "./components/PeopleCard";
-// import Header from "./Header";
-// import Footer from "./Footer";
-// import Panel from "./Panel";
-
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 
 class App extends Component {
@@ -15,13 +13,23 @@ class App extends Component {
         topScore: 0
     };
     //function to mark it has been clicked
-    clicked = id =>{
-        //if the card has not been clicked before
-        const list = this.state.data
-        if(list[id - 1].chosen !== true){
-            //mark it being clicked;
-            list[id - 1].chosen  = true;
+    clicked = (obj) =>{
+        //get the corresponding obj in list
+        let list = this.state.data
+        let index = list.reduce(function(a,v,i){
+            if(v.id === obj.id){
+                a = i
+            } return a
+        },0)
+        //console.log(list[index])
 
+        if(list[index].chosen === false){
+
+            //g mark it as being clicked
+            list[index].chosen = true;
+            //shuffle list
+            this.shuffle(list);
+            //console.log(list);
             //add earned newScore
             let newScore = this.state.score + 1;
             if(newScore > this.state.topScore){
@@ -29,13 +37,16 @@ class App extends Component {
                 this.setState({ data:list,
                                 topScore:newScore,
                                 score: newScore})
-                console.log(list)
+            //    console.log(list)
             }else{
-                //just set new score
+                //just set new score, not top score
                 this.setState({ data:list,
                                 score:newScore})
-                console.log(this.state.data)}
+            //    console.log(this.state.data)
+            }
+            //console.log(this.state.data)
         }else{
+            console.log("wrong")
             this.newGame()
         }
     };
@@ -43,28 +54,39 @@ class App extends Component {
     //set newGame
     newGame = ()=> {
         //change all clicked to false;
-        let newData = this.state.data.map(people => (people.chosen = false));
-        console.log(newData)
+        let newData = this.state.data.map(people =>
+            {let newPeople = people;
+            newPeople.chosen = false
+            return newPeople})
+    //    console.log(newData)
         this.setState({
             data:newData,
             score:0
         })
     }
 
+    //shuffle list
+    shuffle = arr => (arr.sort(()=>(0.5 - Math.random())))
+
     //render stuff
     render(){
         return(
             <div>
-                {this.state.data.map(people =>(
-                    <PeopleCard
-                        name = {people.name}
-                        clicked = {this.clicked}
-                        id = {people.id}
-                        image = {people.image}
-                        key = {people.id}
-                    />
-                ))}
-
+                <Header
+                    score = {this.state.score}
+                    topScore = {this.state.topScore} />
+                <div className = "center">
+                    {this.state.data.map(people =>(
+                        <PeopleCard
+                            name = {people.name}
+                            clicked = {this.clicked}
+                            id = {people.id}
+                            image = {people.image}
+                            key = {people.id}
+                        />
+                    ))}
+                </div>
+                <Footer />
             </div>
         )
     }
